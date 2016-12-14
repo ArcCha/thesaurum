@@ -26,6 +26,17 @@ public class UserService {
         getUserDao().insert(user);
     }
 
+    @Transactional
+    public void enable(User user) {
+        getUserDao().enable(user);
+    }
+
+    @Transactional
+    public void disable(User user) {
+        getUserDao().disable(user);
+    }
+
+    @Transactional
     public List<User> fetchAllUsers() {
         return getUserDao().getAll();
     }

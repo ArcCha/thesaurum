@@ -16,7 +16,7 @@ public class UserDao extends AbstractDao {
 
     public List<User> getAll() {
         Session session = getCurrentSession();
-        Query query = session.createQuery("from users");
+        Query query = session.createQuery("from User order by id");
         List<User> users = query.list();
         return users;
     }
@@ -29,5 +29,19 @@ public class UserDao extends AbstractDao {
             return users.get(0);
         }
         return null;
+    }
+
+    public void enable(User user) {
+        Session session = getCurrentSession();
+        Query query = session.createQuery("update User set enabled=True where id=?")
+                .setParameter(0, user.getId());
+        query.executeUpdate();
+    }
+
+    public void disable(User user) {
+        Session session = getCurrentSession();
+        Query query = session.createQuery("update User set enabled=False where id=?")
+                .setParameter(0, user.getId());
+        query.executeUpdate();
     }
 }
