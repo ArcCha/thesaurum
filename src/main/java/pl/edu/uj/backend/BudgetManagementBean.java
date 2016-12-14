@@ -26,4 +26,14 @@ public class BudgetManagementBean implements BudgetManagement{
     public List<Budget> getAll() {
         return budgetService.fetchAllBudgets();
     }
+
+    @Override
+    public Budget getByName(String name) {
+        return budgetService.getByName(name);
+    }
+
+    @Override
+    public void update(Budget budget) {
+        budgetService.update(budget);
+    }
 }

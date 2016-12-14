@@ -31,4 +31,14 @@ public class BudgetService {
     public List<Budget> fetchAllBudgets() {
         return getBudgetDao().getAll();
     }
+
+    @Transactional
+    public Budget getByName(String name) {
+        return getBudgetDao().getByName(name);
+    }
+
+    @Transactional
+    public void update(Budget budget) {
+        getBudgetDao().update(budget);
+    }
 }

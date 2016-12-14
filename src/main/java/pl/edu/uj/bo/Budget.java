@@ -2,6 +2,8 @@ package pl.edu.uj.bo;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "budgets")
@@ -16,6 +18,8 @@ public class Budget {
     private Date startDate;
     @Column(name = "end_date")
     private Date endDate;
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "budget")
+    private Set<BudgetPool> budgetPools = new HashSet<>();
 
     public Budget() {
     }
@@ -56,5 +60,13 @@ public class Budget {
 
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
+    }
+
+    public Set<BudgetPool> getBudgetPools() {
+        return budgetPools;
+    }
+
+    public void setBudgetPools(Set<BudgetPool> budgetPools) {
+        this.budgetPools = budgetPools;
     }
 }

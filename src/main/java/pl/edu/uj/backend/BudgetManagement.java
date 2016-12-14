@@ -11,4 +11,8 @@ public interface BudgetManagement {
     void add(Budget budget);
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     List<Budget> getAll();
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    Budget getByName(String name);
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    void update(Budget budget);
 }

@@ -14,8 +14,10 @@ import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import pl.edu.uj.Sections;
 import pl.edu.uj.backend.BudgetManagement;
 import pl.edu.uj.bo.Budget;
+import pl.edu.uj.bo.BudgetPool;
 
 import java.util.Date;
+import java.util.Set;
 
 @Secured("ROLE_ADMIN")
 @SpringView(name = "budgetList")
@@ -29,6 +31,12 @@ public class BudgetListView extends CustomComponent implements View {
     private DateField startField;
     private DateField endField;
 
+    private TextField poolNameField;
+    private TextField valueField;
+
+    private Budget currentBudget = null;
+    private Table poolTable;
+
     @Autowired
     public BudgetListView(BudgetManagement budgetManagement) {
         this.budgetManagement = budgetManagement;
@@ -36,15 +44,14 @@ public class BudgetListView extends CustomComponent implements View {
     }
 
     private void init() {
-        Table table = new Table("Budgets");
-
-        table.addContainerProperty("Name", String.class, null);
-        table.addContainerProperty("Start date", Date.class, null);
-        table.addContainerProperty("End date", Date.class, null);
+        Table budgetTable = new Table("Budgets");
+        budgetTable.addContainerProperty("Name", String.class, null);
+        budgetTable.addContainerProperty("Start date", Date.class, null);
+        budgetTable.addContainerProperty("End date", Date.class, null);
 
         int i = 0;
         for (Budget budget : budgetManagement.getAll()) {
-            table.addItem(new Object[]{
+            budgetTable.addItem(new Object[]{
                 budget.getName(),
                 budget.getStartDate(),
                 budget.getEndDate()
@@ -52,20 +59,37 @@ public class BudgetListView extends CustomComponent implements View {
             ++i;
         }
 
-        table.setPageLength(table.size());
+        budgetTable.setPageLength(budgetTable.size());
+        budgetTable.addItemClickListener(ItemClickEvent -> {
+            currentBudget = budgetManagement.getByName((String)ItemClickEvent.getItem().getItemProperty("Name").getValue());
+            updateTable();
+            System.out.println(currentBudget);
+        });
+        FormLayout budgetForm = buildBudgetForm();
 
-        FormLayout form = buildForm();
+        poolTable = new Table("Pools");
+        poolTable.addContainerProperty("Name", String.class, null);
+        poolTable.addContainerProperty("Amount", Integer.class, null);
+        poolTable.setPageLength(poolTable.size());
 
-        VerticalLayout rootLayout = new VerticalLayout();
+        FormLayout poolForm = buildPoolForm();
+
+        HorizontalLayout rootLayout = new HorizontalLayout();
         rootLayout.setSizeFull();
-        rootLayout.addComponent(table);
-        rootLayout.addComponent(form);
-        rootLayout.setComponentAlignment(table, Alignment.MIDDLE_CENTER);
-        rootLayout.setComponentAlignment(form, Alignment.BOTTOM_RIGHT);
+        VerticalLayout budgetsLayout = new VerticalLayout();
+        budgetsLayout.addComponent(budgetTable);
+        budgetsLayout.addComponent(budgetForm);
+
+        VerticalLayout poolsLayout = new VerticalLayout();
+        poolsLayout.addComponent(poolTable);
+        poolsLayout.addComponent(poolForm);
+
+        rootLayout.addComponent(budgetsLayout);
+        rootLayout.addComponent(poolsLayout);
         setCompositionRoot(rootLayout);
     }
 
-    private FormLayout buildForm() {
+    private FormLayout buildBudgetForm() {
         FormLayout layout = new FormLayout();
         nameField = new TextField("Name");
         startField = new DateField("Start date");
@@ -85,6 +109,42 @@ public class BudgetListView extends CustomComponent implements View {
             Page.getCurrent().reload();
         });
         return layout;
+    }
+
+    private FormLayout buildPoolForm() {
+        FormLayout layout = new FormLayout();
+        poolNameField = new TextField("Name");
+        valueField = new TextField("Value");
+        Button addButton = new Button("Add");
+        layout.addComponent(poolNameField);
+        layout.addComponent(valueField);
+        layout.addComponent(addButton);
+        addButton.addStyleName(ValoTheme.BUTTON_FRIENDLY);
+        addButton.addClickListener(event -> {
+            BudgetPool pool = new BudgetPool(
+                    poolNameField.getValue(),
+                    Integer.parseInt(valueField.getValue()),
+                    currentBudget);
+            Set<BudgetPool> pools = currentBudget.getBudgetPools();
+            pools.add(pool);
+            currentBudget.setBudgetPools(pools);
+            budgetManagement.update(currentBudget);
+            updateTable();
+        });
+        return layout;
+    }
+
+    private void updateTable() {
+        poolTable.removeAllItems();
+        int i = 0;
+        for (BudgetPool pool : currentBudget.getBudgetPools()) {
+            poolTable.addItem(new Object[]{
+                    pool.getName(),
+                    pool.getValue()
+            }, i);
+            ++i;
+        }
+        poolTable.setPageLength(poolTable.size());
     }
 
     @Override
