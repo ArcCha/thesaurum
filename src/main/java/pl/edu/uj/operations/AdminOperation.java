@@ -8,7 +8,6 @@ import org.vaadin.spring.sidebar.annotation.FontAwesomeIcon;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import pl.edu.uj.Sections;
 import pl.edu.uj.backend.MyBackend;
-import pl.edu.uj.bo.User;
 import pl.edu.uj.service.UserService;
 
 @SpringComponent
@@ -27,10 +26,6 @@ public class AdminOperation implements Runnable {
 
     @Override
     public void run() {
-        User user = new User();
-        user.setName("TEST");
-        user.setSurname("NAJPRAWDZIWSZY");
-        userService.add(user);
         Notification.show(backend.adminOnlyEcho("Hello Admin World"));
     }
 }

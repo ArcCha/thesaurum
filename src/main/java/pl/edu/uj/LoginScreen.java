@@ -21,14 +21,11 @@ public class LoginScreen extends CustomComponent {
     private final EventBus.SessionEventBus eventBus;
 
     private TextField userName;
-
     private PasswordField passwordField;
-
     private Button login;
-
     private Label loginFailedLabel;
-
     private Label loggedOutLabel;
+    private Button register;
 
     @Autowired
     public LoginScreen(VaadinSecurity vaadinSecurity, EventBus.SessionEventBus eventBus) {
@@ -47,13 +44,19 @@ public class LoginScreen extends CustomComponent {
         userName = new TextField("Username");
         passwordField = new PasswordField("Password");
         login = new Button("Login");
+        register = new Button("Register");
         loginForm.addComponent(userName);
         loginForm.addComponent(passwordField);
         loginForm.addComponent(login);
+        loginForm.addComponent(register);
         login.addStyleName(ValoTheme.BUTTON_PRIMARY);
         login.setDisableOnClick(true);
         login.setClickShortcut(ShortcutAction.KeyCode.ENTER);
         login.addClickListener((Button.ClickListener) event -> login());
+
+        register.addStyleName(ValoTheme.BUTTON_FRIENDLY);
+        register.setDisableOnClick(true);
+        register.addClickListener(event -> ((ThesaurumUI)getUI()).showRegistrationScreen());
 
         VerticalLayout loginLayout = new VerticalLayout();
         loginLayout.setSizeUndefined();

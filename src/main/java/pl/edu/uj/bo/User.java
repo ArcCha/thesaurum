@@ -26,6 +26,16 @@ public class User {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private Set<UserRole> userRole = new HashSet<>();
 
+    public User() {}
+
+    public User(String username, String name, String surname, String email, String password) {
+        this.name = name;
+        this.surname = surname;
+        this.username = username;
+        this.password = password;
+        this.email = email;
+    }
+
     public Integer getId() {
         return id;
     }

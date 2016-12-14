@@ -15,6 +15,7 @@ import org.vaadin.spring.events.annotation.EventBusListenerMethod;
 import org.vaadin.spring.security.VaadinSecurity;
 import org.vaadin.spring.security.util.SecurityExceptionUtils;
 import org.vaadin.spring.security.util.SuccessfulLoginEvent;
+import pl.edu.uj.event.SuccessfulRegistrationEvent;
 
 
 @Theme(ValoTheme.THEME_NAME)
@@ -73,15 +74,14 @@ public class ThesaurumUI extends UI {
         setContent(applicationContext.getBean(MainScreen.class));
     }
 
+    void showRegistrationScreen() {
+        setContent(applicationContext.getBean(RegistrationScreen.class));
+    }
+
     @EventBusListenerMethod
     void onLogin(SuccessfulLoginEvent loginEvent) {
         if (loginEvent.getSource().equals(this)) {
-            access(new Runnable() {
-                @Override
-                public void run() {
-                    showMainScreen();
-                }
-            });
+            access(() -> showMainScreen());
         } else {
             // We cannot inject the Main Screen if the event was fired from another UI, since that UI's scope would be active
             // and the main screen for that UI would be injected. Instead, we just reload the page and let the init(...) method
@@ -89,4 +89,14 @@ public class ThesaurumUI extends UI {
             getPage().reload();
         }
     }
+
+    @EventBusListenerMethod
+    void onRegistration(SuccessfulRegistrationEvent registrationEvent) {
+        if (registrationEvent.getSource().equals(this)) {
+            access(() -> showLoginScreen(false));
+        } else {
+            getPage().reload();
+        }
+    }
+
 }
