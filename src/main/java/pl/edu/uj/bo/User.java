@@ -1,6 +1,8 @@
 package pl.edu.uj.bo;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -13,12 +15,16 @@ public class User {
     private String name;
     @Column(name = "surname")
     private String surname;
-    @Column(name = "login")
-    private String login;
+    @Column(name = "username")
+    private String username;
+    @Column(name = "password")
+    private String password;
+    @Column(name = "enabled")
+    private Boolean enabled;
     @Column(name = "email")
     private String email;
-    @Column(name = "active")
-    private Boolean active;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    private Set<UserRole> userRole = new HashSet<>();
 
     public Integer getId() {
         return id;
@@ -44,12 +50,28 @@ public class User {
         this.surname = surname;
     }
 
-    public String getLogin() {
-        return login;
+    public String getUsername() {
+        return username;
     }
 
-    public void setLogin(String login) {
-        this.login = login;
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
     }
 
     public String getEmail() {
@@ -60,11 +82,11 @@ public class User {
         this.email = email;
     }
 
-    public Boolean isActive() {
-        return active;
+    public Set<UserRole> getUserRole() {
+        return userRole;
     }
 
-    public void setActive(Boolean active) {
-        this.active = active;
+    public void setUserRole(Set<UserRole> userRole) {
+        this.userRole = userRole;
     }
 }

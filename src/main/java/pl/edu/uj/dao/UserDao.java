@@ -20,4 +20,14 @@ public class UserDao extends AbstractDao {
         List<User> users = query.list();
         return users;
     }
+
+    public User findByUsername(String username) {
+        Session session = getCurrentSession();
+        Query query = session.createQuery("from User where username=?").setParameter(0, username);
+        List<User> users = query.list();
+        if (users.size() > 0) {
+            return users.get(0);
+        }
+        return null;
+    }
 }
