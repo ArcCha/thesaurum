@@ -25,17 +25,17 @@ public class BudgetDao extends AbstractDao {
 
     public Budget getByName(String name) {
         Session session = getCurrentSession();
-        Query query = session.createQuery("from Budget where name=?").setParameter(0, name);
+        Query query = session.createQuery("from Budget where name = :name")
+                .setParameter("name", name);
         return (Budget)query.getSingleResult();
     }
 
     public void update(Budget budget) {
         Session session = getCurrentSession();
         Set<BudgetPool> pools = budget.getBudgetPools();
-        Query delete = session.createQuery("delete from BudgetPool where budget=?").setParameter(0, budget);
+        Query delete = session.createQuery("delete from BudgetPool where budget = :budget")
+                .setParameter("budget", budget);
         delete.executeUpdate();
-        for (BudgetPool pool : pools) {
-            session.save(pool);
-        }
+        pools.forEach(session::save);
     }
 }
