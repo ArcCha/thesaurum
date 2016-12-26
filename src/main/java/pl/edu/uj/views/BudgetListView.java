@@ -1,23 +1,19 @@
 package pl.edu.uj.views;
 
+import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FontAwesome;
-import com.vaadin.server.Page;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
-import com.vaadin.ui.themes.ValoTheme;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.vaadin.spring.sidebar.annotation.FontAwesomeIcon;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import pl.edu.uj.Sections;
-import pl.edu.uj.backend.BudgetManagement;
 import pl.edu.uj.bo.Budget;
 import pl.edu.uj.bo.BudgetPool;
-
-import java.util.Date;
-import java.util.Set;
+import pl.edu.uj.service.BudgetService;
 
 @Secured("ROLE_ADMIN")
 @SpringView(name = "budgetList")
@@ -25,7 +21,7 @@ import java.util.Set;
 @FontAwesomeIcon(FontAwesome.COGS)
 public class BudgetListView extends CustomComponent implements View {
 
-    private BudgetManagement budgetManagement;
+    private BudgetService budgetService;
 
     private TextField nameField;
     private DateField startField;
@@ -38,113 +34,38 @@ public class BudgetListView extends CustomComponent implements View {
     private Table poolTable;
 
     @Autowired
-    public BudgetListView(BudgetManagement budgetManagement) {
-        this.budgetManagement = budgetManagement;
+    public BudgetListView(BudgetService budgetService) {
+        this.budgetService = budgetService;
         init();
     }
 
     private void init() {
         Table budgetTable = new Table("Budgets");
-        budgetTable.addContainerProperty("Name", String.class, null);
-        budgetTable.addContainerProperty("Start date", Date.class, null);
-        budgetTable.addContainerProperty("End date", Date.class, null);
-
-        int i = 0;
-        for (Budget budget : budgetManagement.getAll()) {
-            budgetTable.addItem(new Object[]{
-                budget.getName(),
-                budget.getStartDate(),
-                budget.getEndDate()
-            }, i);
-            ++i;
-        }
-
+        BeanItemContainer<Budget> budgetContainer = new BeanItemContainer<>(Budget.class);
+        budgetContainer.addAll(budgetService.fetchAllBudgets());
+        budgetTable.setContainerDataSource(budgetContainer);
         budgetTable.setPageLength(budgetTable.size());
-        budgetTable.addItemClickListener(ItemClickEvent -> {
-            currentBudget = budgetManagement.getByName((String)ItemClickEvent.getItem().getItemProperty("Name").getValue());
-            updateTable();
-            System.out.println(currentBudget);
-        });
-        FormLayout budgetForm = buildBudgetForm();
+        budgetTable.setEditable(true);
+        budgetTable.setVisibleColumns("name", "startDate", "endDate");
 
         poolTable = new Table("Pools");
-        poolTable.addContainerProperty("Name", String.class, null);
-        poolTable.addContainerProperty("Amount", Integer.class, null);
+        BeanItemContainer<BudgetPool> poolContainer  = new BeanItemContainer<>(BudgetPool.class);
         poolTable.setPageLength(poolTable.size());
 
-        FormLayout poolForm = buildPoolForm();
+
+        VerticalLayout budgetsLayout = new VerticalLayout();
+        budgetsLayout.setSizeUndefined();
+        budgetsLayout.addComponent(budgetTable);
+
+        VerticalLayout poolsLayout = new VerticalLayout();
+        poolsLayout.setSizeUndefined();
+        poolsLayout.addComponent(poolTable);
 
         HorizontalLayout rootLayout = new HorizontalLayout();
         rootLayout.setSizeFull();
-        VerticalLayout budgetsLayout = new VerticalLayout();
-        budgetsLayout.addComponent(budgetTable);
-        budgetsLayout.addComponent(budgetForm);
-
-        VerticalLayout poolsLayout = new VerticalLayout();
-        poolsLayout.addComponent(poolTable);
-        poolsLayout.addComponent(poolForm);
-
         rootLayout.addComponent(budgetsLayout);
         rootLayout.addComponent(poolsLayout);
         setCompositionRoot(rootLayout);
-    }
-
-    private FormLayout buildBudgetForm() {
-        FormLayout layout = new FormLayout();
-        nameField = new TextField("Name");
-        startField = new DateField("Start date");
-        endField = new DateField("End date");
-        Button addButton = new Button("Add");
-        layout.addComponent(nameField);
-        layout.addComponent(startField);
-        layout.addComponent(endField);
-        layout.addComponent(addButton);
-        addButton.addStyleName(ValoTheme.BUTTON_FRIENDLY);
-        addButton.addClickListener(event -> {
-            Budget budget = new Budget(
-                    nameField.getValue(),
-                    startField.getValue(),
-                    endField.getValue());
-            budgetManagement.add(budget);
-            Page.getCurrent().reload();
-        });
-        return layout;
-    }
-
-    private FormLayout buildPoolForm() {
-        FormLayout layout = new FormLayout();
-        poolNameField = new TextField("Name");
-        valueField = new TextField("Value");
-        Button addButton = new Button("Add");
-        layout.addComponent(poolNameField);
-        layout.addComponent(valueField);
-        layout.addComponent(addButton);
-        addButton.addStyleName(ValoTheme.BUTTON_FRIENDLY);
-        addButton.addClickListener(event -> {
-            BudgetPool pool = new BudgetPool(
-                    poolNameField.getValue(),
-                    Integer.parseInt(valueField.getValue()),
-                    currentBudget);
-            Set<BudgetPool> pools = currentBudget.getBudgetPools();
-            pools.add(pool);
-            currentBudget.setBudgetPools(pools);
-            budgetManagement.update(currentBudget);
-            updateTable();
-        });
-        return layout;
-    }
-
-    private void updateTable() {
-        poolTable.removeAllItems();
-        int i = 0;
-        for (BudgetPool pool : currentBudget.getBudgetPools()) {
-            poolTable.addItem(new Object[]{
-                    pool.getName(),
-                    pool.getValue()
-            }, i);
-            ++i;
-        }
-        poolTable.setPageLength(poolTable.size());
     }
 
     @Override

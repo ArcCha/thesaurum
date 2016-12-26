@@ -7,7 +7,7 @@ import javax.persistence.PersistenceContext;
 
 public class AbstractDao {
     @PersistenceContext
-    EntityManager entityManager;
+    private EntityManager entityManager;
 
     protected Session getCurrentSession()  {
         return entityManager.unwrap(Session.class);

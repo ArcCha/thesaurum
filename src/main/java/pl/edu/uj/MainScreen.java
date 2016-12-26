@@ -36,6 +36,7 @@ public class MainScreen extends CustomComponent {
         layout.setExpandRatio(viewContainer, 1f);
 
         Navigator navigator = new Navigator(UI.getCurrent(), viewContainer);
+
         // Without an AccessDeniedView, the view provider would act like the restricted views did not exist at all.
         springViewProvider.setAccessDeniedViewClass(AccessDeniedView.class);
         navigator.addProvider(springViewProvider);

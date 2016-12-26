@@ -1,18 +1,19 @@
 package pl.edu.uj.views;
 
+import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FontAwesome;
-import com.vaadin.server.Page;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.*;
-import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.VerticalLayout;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.vaadin.spring.sidebar.annotation.FontAwesomeIcon;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import pl.edu.uj.Sections;
-import pl.edu.uj.backend.UserManagement;
 import pl.edu.uj.bo.User;
 import pl.edu.uj.service.UserService;
 
@@ -22,55 +23,22 @@ import pl.edu.uj.service.UserService;
 @FontAwesomeIcon(FontAwesome.COGS)
 public class UserListView extends CustomComponent implements View {
 
-    private final UserManagement userManagement;
     private final UserService userService;
 
     @Autowired
-    public UserListView(UserManagement userManagement, UserService userService) {
-        this.userManagement = userManagement;
+    public UserListView(UserService userService) {
         this.userService = userService;
         init();
     }
 
     private void init() {
         Table table = new Table("User List");
-
-        table.addContainerProperty("Username", String.class, null);
-        table.addContainerProperty("Name", String.class, null);
-        table.addContainerProperty("Surname", String.class, null);
-        table.addContainerProperty("Email", String.class, null);
-        table.addContainerProperty("Enable", Button.class, null);
-
-        int i = 1;
-        for (User user : userService.fetchAllUsers()) {
-            String enablePrompt = "Enable";
-            String disablePrompt = "Disable";
-            Button toggle = new Button(user.getEnabled() ? disablePrompt : enablePrompt);
-            toggle.addStyleName(user.getEnabled() ? ValoTheme.BUTTON_DANGER : ValoTheme.BUTTON_FRIENDLY);
-            toggle.setData(user);
-            Button.ClickListener enableListener = event -> {
-                User innerUser = (User)event.getButton().getData();
-                userManagement.enable(innerUser);
-                Page.getCurrent().reload();
-            };
-            Button.ClickListener disableListener = event -> {
-                User innerUser = (User)event.getButton().getData();
-                userManagement.disable(innerUser);
-                Page.getCurrent().reload();
-
-            };
-            toggle.addClickListener(user.getEnabled() ? disableListener : enableListener);
-
-            table.addItem(new Object[]{
-                user.getUsername(),
-                user.getName(),
-                user.getSurname(),
-                user.getEmail(),
-                toggle
-            }, i);
-            ++i;
-        }
+        BeanItemContainer<User> itemContainer = new BeanItemContainer<>(User.class);
+        itemContainer.addAll(userService.fetchAll());
+        table.setContainerDataSource(itemContainer);
         table.setPageLength(table.size());
+        table.setEditable(true);
+        table.setVisibleColumns("name", "surname", "username", "email", "enabled");
 
         VerticalLayout rootLayout = new VerticalLayout();
         rootLayout.setSizeFull();

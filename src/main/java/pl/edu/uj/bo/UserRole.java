@@ -9,7 +9,7 @@ public class UserRole {
     @GeneratedValue
     @Column(name = "id")
     private Integer id;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "username", nullable = false)
     private User user;
     @Column(name = "role")

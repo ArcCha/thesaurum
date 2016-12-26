@@ -23,7 +23,7 @@ public class User {
     private Boolean enabled;
     @Column(name = "email")
     private String email;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
     private Set<UserRole> userRole = new HashSet<>();
 
     public User() {}
