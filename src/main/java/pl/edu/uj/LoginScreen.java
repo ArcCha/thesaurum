@@ -12,6 +12,15 @@ import org.vaadin.spring.annotation.PrototypeScope;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.security.VaadinSecurity;
 import org.vaadin.spring.security.util.SuccessfulLoginEvent;
+import org.vaadin.viritin.MSize;
+import org.vaadin.viritin.button.MButton;
+import org.vaadin.viritin.fields.MPasswordField;
+import org.vaadin.viritin.fields.MTextField;
+import org.vaadin.viritin.label.Header;
+import org.vaadin.viritin.label.MLabel;
+import org.vaadin.viritin.layouts.MFormLayout;
+import org.vaadin.viritin.layouts.MHorizontalLayout;
+import org.vaadin.viritin.layouts.MVerticalLayout;
 
 @PrototypeScope
 @SpringComponent
@@ -20,12 +29,12 @@ public class LoginScreen extends CustomComponent {
     private final VaadinSecurity vaadinSecurity;
     private final EventBus.SessionEventBus eventBus;
 
-    private TextField userName;
-    private PasswordField passwordField;
-    private Button login;
-    private Label loginFailedLabel;
-    private Label loggedOutLabel;
-    private Button register;
+    private MTextField usernameField;
+    private MPasswordField passwordField;
+    private MButton loginBtn;
+    private MLabel loginFailedLabel;
+    private MLabel loggedOutLabel;
+    private MButton registerBtn;
 
     @Autowired
     public LoginScreen(VaadinSecurity vaadinSecurity, EventBus.SessionEventBus eventBus) {
@@ -34,76 +43,71 @@ public class LoginScreen extends CustomComponent {
         initLayout();
     }
 
-    void setLoggedOut(boolean loggedOut) {
+    public void setLoggedOut(boolean loggedOut) {
         loggedOutLabel.setVisible(loggedOut);
     }
 
     private void initLayout() {
-        FormLayout loginForm = new FormLayout();
-        loginForm.setSizeUndefined();
-        userName = new TextField("Username");
-        passwordField = new PasswordField("Password");
-        login = new Button("Login");
-        register = new Button("Register");
-        loginForm.addComponent(userName);
-        loginForm.addComponent(passwordField);
-        loginForm.addComponent(login);
-        loginForm.addComponent(register);
-        login.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        login.setDisableOnClick(true);
-        login.setClickShortcut(ShortcutAction.KeyCode.ENTER);
-        login.addClickListener((Button.ClickListener) event -> login());
+        Header header = new Header("Thesaurum").setHeaderLevel(1);
 
-        register.addStyleName(ValoTheme.BUTTON_FRIENDLY);
-        register.setDisableOnClick(true);
-        register.addClickListener(event -> ((ThesaurumUI)getUI()).showRegistrationScreen());
-
-        VerticalLayout loginLayout = new VerticalLayout();
-        loginLayout.setSizeUndefined();
-
-        loginFailedLabel = new Label();
-        loginLayout.addComponent(loginFailedLabel);
-        loginLayout.setComponentAlignment(loginFailedLabel, Alignment.BOTTOM_CENTER);
+        MFormLayout loginForm = initFormLayout();
+        loginFailedLabel = new MLabel()
+                .withStyleName(ValoTheme.LABEL_FAILURE)
+                .withVisible(false);
         loginFailedLabel.setSizeUndefined();
-        loginFailedLabel.addStyleName(ValoTheme.LABEL_FAILURE);
-        loginFailedLabel.setVisible(false);
-
-        loggedOutLabel = new Label("Good bye!");
-        loginLayout.addComponent(loggedOutLabel);
-        loginLayout.setComponentAlignment(loggedOutLabel, Alignment.BOTTOM_CENTER);
+        loggedOutLabel = new MLabel()
+                .withStyleName(ValoTheme.LABEL_SUCCESS)
+                .withVisible(false);
         loggedOutLabel.setSizeUndefined();
-        loggedOutLabel.addStyleName(ValoTheme.LABEL_SUCCESS);
-        loggedOutLabel.setVisible(false);
 
-        loginLayout.addComponent(loginForm);
-        loginLayout.setComponentAlignment(loginForm, Alignment.TOP_CENTER);
-
-        VerticalLayout rootLayout = new VerticalLayout(loginLayout);
-        rootLayout.setSizeFull();
-        rootLayout.setComponentAlignment(loginLayout, Alignment.MIDDLE_CENTER);
+        MVerticalLayout loginLayout = new MVerticalLayout()
+                .withSizeUndefined()
+                .with(header, loginFailedLabel, loggedOutLabel, loginForm);
+        MVerticalLayout rootLayout = new MVerticalLayout()
+                .withSize(MSize.FULL_SIZE)
+                .with(loginLayout)
+                .withAlign(loginLayout,  Alignment.MIDDLE_CENTER);
         setCompositionRoot(rootLayout);
         setSizeFull();
+    }
+
+    private MFormLayout initFormLayout() {
+        usernameField = new MTextField("Username");
+        passwordField = new MPasswordField("Password");
+        loginBtn = new MButton("Login")
+                .withStyleName(ValoTheme.BUTTON_PRIMARY)
+                .withClickShortcut(ShortcutAction.KeyCode.ENTER)
+                .withListener(event -> login());
+        loginBtn.setDisableOnClick(true);
+        registerBtn = new MButton("Register")
+                .withStyleName(ValoTheme.BUTTON_FRIENDLY)
+                .withListener(event -> ((ThesaurumUI) getUI()).showRegistrationScreen());
+        registerBtn.setDisableOnClick(true);
+        return new MFormLayout()
+                .withSizeUndefined()
+                .with(usernameField, passwordField,
+                        new MHorizontalLayout().withSizeUndefined().with(registerBtn, loginBtn));
     }
 
     private void login() {
         try {
             loggedOutLabel.setVisible(false);
-
             String password = passwordField.getValue();
             passwordField.setValue("");
-
-            final Authentication authentication = vaadinSecurity.login(userName.getValue(), password);
+            final Authentication authentication = vaadinSecurity.login(usernameField.getValue(), password);
             eventBus.publish(this, new SuccessfulLoginEvent(getUI(), authentication));
         } catch (AuthenticationException ex) {
-            userName.focus();
-            userName.selectAll();
+            usernameField.focus();
+            usernameField.selectAll();
             loginFailedLabel.setValue(String.format("Login failed: %s", ex.getMessage()));
             loginFailedLabel.setVisible(true);
         } catch (Exception ex) {
-            Notification.show("An unexpected error occurred", ex.getMessage(), Notification.Type.ERROR_MESSAGE);
+            Notification.show("An unexpected error occurred",
+                    ex.getMessage(),
+                    Notification.Type.ERROR_MESSAGE);
             LoggerFactory.getLogger(getClass()).error("Unexpected error while logging in", ex);
         } finally {
-            login.setEnabled(true);
+            loginBtn.setEnabled(true);
         }
     }
 }
