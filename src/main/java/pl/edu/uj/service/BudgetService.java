@@ -46,4 +46,8 @@ public class BudgetService {
     public void update(Budget budget) {
         getBudgetDao().update(budget);
     }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Transactional
+    public Budget getCurrent() { return getBudgetDao().getCurrent(); }
 }

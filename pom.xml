@@ -100,6 +100,13 @@
 			<version>5.2.5.Final</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.vaadin</groupId>
+			<artifactId>viritin</artifactId>
+			<version>1.61</version>
+		</dependency>
+
+
 
 		<!--<dependency>-->
             <!--<groupId>org.hibernate</groupId>-->
@@ -140,6 +147,10 @@
         <repository>
             <id>atlassian</id>
             <url>https://maven.atlassian.com/3rdparty/</url>
+        </repository>
+        <repository>
+            <id>vaadin-addons</id>
+            <url>http://maven.vaadin.com/vaadin-addons</url>
         </repository>
     </repositories>
 </project>

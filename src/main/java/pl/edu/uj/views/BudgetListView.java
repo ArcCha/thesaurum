@@ -1,37 +1,30 @@
 package pl.edu.uj.views;
 
-import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.*;
+import com.vaadin.ui.CustomComponent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.vaadin.spring.sidebar.annotation.FontAwesomeIcon;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
+import org.vaadin.viritin.fields.MTable;
+import org.vaadin.viritin.layouts.MHorizontalLayout;
+import org.vaadin.viritin.layouts.MVerticalLayout;
 import pl.edu.uj.Sections;
 import pl.edu.uj.bo.Budget;
 import pl.edu.uj.bo.BudgetPool;
 import pl.edu.uj.service.BudgetService;
+import pl.edu.uj.views.forms.BudgetForm;
+import pl.edu.uj.views.forms.BudgetPoolForm;
 
 @Secured("ROLE_ADMIN")
 @SpringView(name = "budgetList")
 @SideBarItem(sectionId = Sections.VIEWS, caption = "Budget List View")
 @FontAwesomeIcon(FontAwesome.COGS)
 public class BudgetListView extends CustomComponent implements View {
-
     private BudgetService budgetService;
-
-    private TextField nameField;
-    private DateField startField;
-    private DateField endField;
-
-    private TextField poolNameField;
-    private TextField valueField;
-
-    private Budget currentBudget = null;
-    private Table poolTable;
 
     @Autowired
     public BudgetListView(BudgetService budgetService) {
@@ -40,31 +33,58 @@ public class BudgetListView extends CustomComponent implements View {
     }
 
     private void init() {
-        Table budgetTable = new Table("Budgets");
-        BeanItemContainer<Budget> budgetContainer = new BeanItemContainer<>(Budget.class);
-        budgetContainer.addAll(budgetService.fetchAllBudgets());
-        budgetTable.setContainerDataSource(budgetContainer);
-        budgetTable.setPageLength(budgetTable.size());
-        budgetTable.setEditable(true);
-        budgetTable.setVisibleColumns("name", "startDate", "endDate");
+        Budget current = budgetService.getCurrent();
 
-        poolTable = new Table("Pools");
-        BeanItemContainer<BudgetPool> poolContainer  = new BeanItemContainer<>(BudgetPool.class);
+        // TODO why can't I create empty table?
+        // It does not render correctly when it's initially empty
+        MTable<BudgetPool> poolTable = new MTable<>(current.getBudgetPools())
+                .withProperties("name", "value")
+                .withColumnHeaders("Name", "Value");
         poolTable.setPageLength(poolTable.size());
 
+        BudgetPoolForm poolForm = new BudgetPoolForm();
+        poolForm.setSavedHandler(pool -> {
+            budgetService.update(pool.getBudget());
+            poolTable.removeAllItems();
+            poolTable.addItems(pool.getBudget().getBudgetPools());
+            poolTable.setPageLength(poolTable.size());
+        });
+        poolTable.addMValueChangeListener(event -> {
+            if (event.getValue() != null) {
+                poolForm.setEntity(event.getValue());
+            }
+        });
 
-        VerticalLayout budgetsLayout = new VerticalLayout();
-        budgetsLayout.setSizeUndefined();
-        budgetsLayout.addComponent(budgetTable);
+        MTable<Budget> budgetTable = new MTable<>(budgetService.fetchAllBudgets())
+                .withProperties("name", "startDate", "endDate")
+                .withColumnHeaders("Name", "Start", "End");
+        budgetTable.setPageLength(budgetTable.size());
+        budgetTable.setSelected(current);
 
-        VerticalLayout poolsLayout = new VerticalLayout();
-        poolsLayout.setSizeUndefined();
-        poolsLayout.addComponent(poolTable);
+        BudgetForm budgetForm = new BudgetForm();
+        budgetForm.setSavedHandler(budget -> {
+            budgetService.update(budget);
+            budgetTable.removeAllItems();
+            budgetTable.addItems(budgetService.fetchAllBudgets());
+        });
+        budgetTable.addMValueChangeListener(event -> {
+            if (event.getValue() != null) {
+                budgetForm.setEntity(event.getValue());
+                poolTable.removeAllItems();
+                poolTable.addItems(event.getValue().getBudgetPools());
+                poolTable.setPageLength(poolTable.size());
+            }
+        });
 
-        HorizontalLayout rootLayout = new HorizontalLayout();
-        rootLayout.setSizeFull();
-        rootLayout.addComponent(budgetsLayout);
-        rootLayout.addComponent(poolsLayout);
+        MVerticalLayout budgetsLayout = new MVerticalLayout()
+                .withFullHeight()
+                .with(budgetTable, budgetForm);
+        MVerticalLayout poolsLayout = new MVerticalLayout()
+                .withFullHeight()
+                .with(poolTable, poolForm);
+        MHorizontalLayout rootLayout = new MHorizontalLayout()
+                .withFullWidth()
+                .with(budgetsLayout, poolsLayout);
         setCompositionRoot(rootLayout);
     }
 
