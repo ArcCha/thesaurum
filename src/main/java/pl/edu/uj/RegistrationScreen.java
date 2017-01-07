@@ -1,13 +1,22 @@
 package pl.edu.uj;
 
 
+import com.vaadin.event.ShortcutAction;
 import com.vaadin.spring.annotation.SpringComponent;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.themes.ValoTheme;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.vaadin.spring.annotation.PrototypeScope;
 import org.vaadin.spring.events.EventBus;
+import org.vaadin.viritin.MSize;
+import org.vaadin.viritin.button.MButton;
+import org.vaadin.viritin.fields.EmailField;
+import org.vaadin.viritin.fields.MPasswordField;
+import org.vaadin.viritin.fields.MTextField;
+import org.vaadin.viritin.layouts.MFormLayout;
+import org.vaadin.viritin.layouts.MVerticalLayout;
 import pl.edu.uj.bo.User;
 import pl.edu.uj.event.SuccessfulRegistrationEvent;
 import pl.edu.uj.service.UserService;
@@ -20,15 +29,17 @@ public class RegistrationScreen extends CustomComponent {
     private final PasswordEncoder passwordEncoder;
     private final EventBus.SessionEventBus eventBus;
 
-    private TextField usernameField;
-    private TextField nameField;
-    private TextField surnameField;
-    private TextField emailField;
-    private PasswordField passwordField;
-    private Button register;
+    private MTextField usernameField;
+    private MTextField nameField;
+    private MTextField surnameField;
+    private EmailField emailField;
+    private MPasswordField passwordField;
+    private MButton register;
 
     @Autowired
-    public RegistrationScreen(UserService userService, EventBus.SessionEventBus eventBus, PasswordEncoder passwordEncoder) {
+    public RegistrationScreen(UserService userService,
+                              EventBus.SessionEventBus eventBus,
+                              PasswordEncoder passwordEncoder) {
         this.userService = userService;
         this.eventBus = eventBus;
         this.passwordEncoder = passwordEncoder;
@@ -36,44 +47,39 @@ public class RegistrationScreen extends CustomComponent {
     }
 
     private void initLayout() {
-        FormLayout loginForm = new FormLayout();
-        loginForm.setSizeUndefined();
-        usernameField = new TextField("Username");
-        nameField = new TextField("Name");
-        surnameField = new TextField("Surname");
-        emailField = new TextField("Email");
-        passwordField = new PasswordField("Password");
-        register = new Button("Register");
-        loginForm.addComponent(usernameField);
-        loginForm.addComponent(nameField);
-        loginForm.addComponent(surnameField);
-        loginForm.addComponent(emailField);
-        loginForm.addComponent(passwordField);
-        loginForm.addComponent(register);
+        usernameField = new MTextField("Username");
+        nameField = new MTextField("Name");
+        surnameField = new MTextField("Surname");
+        emailField = new EmailField("Email");
+        passwordField = new MPasswordField("Password");
+        register = new MButton("Register")
+                .withStyleName(ValoTheme.BUTTON_FRIENDLY)
+                .withClickShortcut(ShortcutAction.KeyCode.ENTER)
+                .withListener(event -> register());
 
-        register.addStyleName(ValoTheme.BUTTON_FRIENDLY);
-        register.addClickListener(event -> register());
+        MFormLayout registerForm = new MFormLayout()
+                .withSizeUndefined()
+                .with(usernameField, nameField, surnameField,
+                        emailField, passwordField, register);
 
-        VerticalLayout loginLayout = new VerticalLayout();
-        loginLayout.setSizeUndefined();
-        loginLayout.addComponent(loginForm);
-        loginLayout.setComponentAlignment(loginForm, Alignment.TOP_CENTER);
-        VerticalLayout rootLayout = new VerticalLayout(loginLayout);
-        rootLayout.setSizeFull();
-        rootLayout.setComponentAlignment(loginLayout, Alignment.MIDDLE_CENTER);
+        MVerticalLayout registerLayout = new MVerticalLayout()
+                .withSizeUndefined()
+                .with(registerForm);
+
+        MVerticalLayout rootLayout = new MVerticalLayout()
+                .withSize(MSize.FULL_SIZE)
+                .with(registerLayout)
+                .withAlign(registerLayout, Alignment.MIDDLE_CENTER);
         setCompositionRoot(rootLayout);
         setSizeFull();
     }
 
     private void register() {
-        String username = usernameField.getValue();
-        String name = nameField.getValue();
-        String surname = surnameField.getValue();
-        String email = emailField.getValue();
-        String password = passwordField.getValue();
-
-        User user = new User(username, name, surname, email, passwordEncoder.encode(password));
-        user.setEnabled(false);
+        User user = new User(usernameField.getValue(),
+                nameField.getValue(),
+                surnameField.getValue(),
+                emailField.getValue(),
+                passwordEncoder.encode(passwordField.getValue()));
         userService.add(user);
         eventBus.publish(this, new SuccessfulRegistrationEvent(getUI()));
     }

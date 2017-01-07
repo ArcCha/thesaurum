@@ -22,7 +22,6 @@ public class UserService {
         this.userDao = userDao;
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Transactional
     public void add(User user) {
         getUserDao().insert(user);
