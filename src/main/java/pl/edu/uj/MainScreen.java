@@ -1,17 +1,18 @@
 package pl.edu.uj;
 
-import com.vaadin.navigator.Navigator;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.spring.navigator.SpringViewProvider;
-import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.UI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.security.VaadinSecurity;
 import org.vaadin.spring.sidebar.components.ValoSideBar;
 import org.vaadin.spring.sidebar.security.VaadinSecurityItemFilter;
+import org.vaadin.viritin.MSize;
+import org.vaadin.viritin.layouts.MCssLayout;
+import org.vaadin.viritin.layouts.MHorizontalLayout;
+import org.vaadin.viritin.navigator.MNavigator;
 import pl.edu.uj.views.AccessDeniedView;
 import pl.edu.uj.views.ErrorView;
 
@@ -20,24 +21,27 @@ import pl.edu.uj.views.ErrorView;
 public class MainScreen extends CustomComponent {
 
     @Autowired
-    public MainScreen(final VaadinSecurity vaadinSecurity, SpringViewProvider springViewProvider, ValoSideBar sideBar) {
-        HorizontalLayout layout = new HorizontalLayout();
-        layout.setSizeFull();
+    public MainScreen(final VaadinSecurity vaadinSecurity,
+                      SpringViewProvider springViewProvider,
+                      ValoSideBar sideBar) {
+        // By adding a security item filter, only views that are accessible
+        // to the user will show up in the side bar.
+        sideBar.setItemFilter(new VaadinSecurityItemFilter(vaadinSecurity));
+
+        MCssLayout viewContainer = new MCssLayout()
+                .withSize(MSize.FULL_SIZE);
+
+        MHorizontalLayout layout = new MHorizontalLayout()
+                .withSize(MSize.FULL_SIZE)
+                .with(sideBar, viewContainer)
+                .withExpand(viewContainer, 1f);
         setCompositionRoot(layout);
         setSizeFull();
 
-        // By adding a security item filter, only views that are accessible to the user will show up in the side bar.
-        sideBar.setItemFilter(new VaadinSecurityItemFilter(vaadinSecurity));
-        layout.addComponent(sideBar);
+        MNavigator navigator = new MNavigator(UI.getCurrent(), viewContainer);
 
-        CssLayout viewContainer = new CssLayout();
-        viewContainer.setSizeFull();
-        layout.addComponent(viewContainer);
-        layout.setExpandRatio(viewContainer, 1f);
-
-        Navigator navigator = new Navigator(UI.getCurrent(), viewContainer);
-
-        // Without an AccessDeniedView, the view provider would act like the restricted views did not exist at all.
+        // Without an AccessDeniedView, the view provider would act like the
+        // restricted views did not exist at all.
         springViewProvider.setAccessDeniedViewClass(AccessDeniedView.class);
         navigator.addProvider(springViewProvider);
         navigator.setErrorView(ErrorView.class);
