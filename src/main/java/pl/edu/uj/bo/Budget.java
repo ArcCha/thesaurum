@@ -18,7 +18,7 @@ public class Budget {
     private Date startDate;
     @Column(name = "end_date")
     private Date endDate;
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "budget")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "budget", cascade = { CascadeType.ALL })
     private Set<BudgetPool> budgetPools = new HashSet<>();
 
     public Budget() {
@@ -69,4 +69,6 @@ public class Budget {
     public void setBudgetPools(Set<BudgetPool> budgetPools) {
         this.budgetPools = budgetPools;
     }
+
+    public void addBudgetPool(BudgetPool pool) { budgetPools.add(pool); pool.setBudget(this); }
 }

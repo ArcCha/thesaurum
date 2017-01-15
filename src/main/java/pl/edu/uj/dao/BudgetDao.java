@@ -5,7 +5,6 @@ import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 import pl.edu.uj.bo.Budget;
 
-import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -31,12 +30,5 @@ public class BudgetDao extends AbstractDao {
     public void update(Budget budget) {
         Session session = getCurrentSession();
         session.update(budget);
-    }
-
-    public Budget getCurrent() {
-        Session session = getCurrentSession();
-        Query query = session.createQuery("from Budget where startDate <= :now and :now <= endDate")
-                .setParameter("now", new Date());
-        return (Budget) query.getSingleResult();
     }
 }
