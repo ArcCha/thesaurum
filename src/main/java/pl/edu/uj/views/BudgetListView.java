@@ -61,6 +61,7 @@ public class BudgetListView extends CustomComponent implements View {
                     budgetService.update(budget);
                     budgetTable.removeAllItems();
                     budgetTable.addItems(budgetService.fetchAllBudgets());
+                    budgetForm.closePopup();
                 });
                 budgetForm.openInModalPopup();
             }
@@ -75,6 +76,7 @@ public class BudgetListView extends CustomComponent implements View {
                 poolForm.setSavedHandler(pool -> {
                     budgetService.update(pool.getBudget());
                     refreshBudgetPoolsTable(pool.getBudget(), poolTable);
+                    poolForm.closePopup();
                 });
             }
         });

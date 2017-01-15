@@ -14,6 +14,11 @@ public class UserDao extends AbstractDao {
         session.save(user);
     }
 
+    public void update(User user) {
+        Session session = getCurrentSession();
+        session.update(user);
+    }
+
     public List<User> getAll() {
         Session session = getCurrentSession();
         Query<User> query = session.createQuery("from User order by id", User.class);

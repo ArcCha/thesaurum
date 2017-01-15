@@ -29,6 +29,10 @@ public class UserService {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Transactional
+    public void update(User user) { getUserDao().update(user); }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Transactional
     public void enable(User user) {
         getUserDao().enable(user);
     }
