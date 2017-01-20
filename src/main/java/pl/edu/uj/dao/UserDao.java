@@ -3,6 +3,7 @@ package pl.edu.uj.dao;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import pl.edu.uj.bo.User;
 
 import java.util.List;
@@ -25,6 +26,7 @@ public class UserDao extends AbstractDao {
         return query.list();
     }
 
+    @Transactional
     public User findByUsername(String username) {
         Session session = getCurrentSession();
         Query<User> query = session.createQuery("from User where username = :username", User.class)
