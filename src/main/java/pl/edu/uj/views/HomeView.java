@@ -16,7 +16,6 @@ import pl.edu.uj.Sections;
 @SideBarItem(sectionId = Sections.VIEWS, caption = "Home", order = 0)
 @FontAwesomeIcon(FontAwesome.HOME)
 public class HomeView extends VerticalLayout implements View {
-
     public HomeView() {
         setSpacing(true);
         setMargin(true);
