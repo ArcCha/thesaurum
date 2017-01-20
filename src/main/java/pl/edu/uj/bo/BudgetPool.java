@@ -1,6 +1,8 @@
 package pl.edu.uj.bo;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "budget_pools")
@@ -16,6 +18,8 @@ public class BudgetPool {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "budget_name", nullable = false)
     private Budget budget;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "budgetPool")
+    private Set<Application> applications = new HashSet<>();
 
     public BudgetPool() {
     }
@@ -56,5 +60,13 @@ public class BudgetPool {
 
     public void setBudget(Budget budget) {
         this.budget = budget;
+    }
+
+    public Set<Application> getApplications() {
+        return applications;
+    }
+
+    public void setApplications(Set<Application> applications) {
+        this.applications = applications;
     }
 }

@@ -25,6 +25,8 @@ public class User {
     private String email;
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
     private Set<UserRole> userRole = new HashSet<>();
+    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
+    private Set<Application> applications = new HashSet<>();
 
     public User() {}
 
@@ -99,5 +101,13 @@ public class User {
 
     public void setUserRole(Set<UserRole> userRole) {
         this.userRole = userRole;
+    }
+
+    public Set<Application> getApplications() {
+        return applications;
+    }
+
+    public void setApplications(Set<Application> applications) {
+        this.applications = applications;
     }
 }
