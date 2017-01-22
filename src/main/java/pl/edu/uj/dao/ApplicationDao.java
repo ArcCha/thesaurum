@@ -12,4 +12,10 @@ public class ApplicationDao extends AbstractDao {
         Session session = getCurrentSession();
         session.save(application);
     }
+
+    @Transactional
+    public void update(Application application) {
+        Session session = getCurrentSession();
+        session.save(application);
+    }
 }

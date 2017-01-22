@@ -24,7 +24,7 @@ public class User {
     @Column(name = "email")
     private String email;
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
-    private Set<UserRole> userRole = new HashSet<>();
+    private Set<UserRole> roles = new HashSet<>();
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
     private Set<Application> applications = new HashSet<>();
 
@@ -95,12 +95,12 @@ public class User {
         this.email = email;
     }
 
-    public Set<UserRole> getUserRole() {
-        return userRole;
+    public Set<UserRole> getRoles() {
+        return roles;
     }
 
-    public void setUserRole(Set<UserRole> userRole) {
-        this.userRole = userRole;
+    public void setRoles(Set<UserRole> roles) {
+        this.roles = roles;
     }
 
     public Set<Application> getApplications() {

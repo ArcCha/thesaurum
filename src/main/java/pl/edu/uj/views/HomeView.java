@@ -17,7 +17,9 @@ import org.vaadin.viritin.layouts.MVerticalLayout;
 import pl.edu.uj.Sections;
 import pl.edu.uj.bo.Application;
 import pl.edu.uj.bo.User;
+import pl.edu.uj.dao.ApplicationDao;
 import pl.edu.uj.dao.UserDao;
+import pl.edu.uj.views.forms.ApplicationForm;
 
 import java.util.Set;
 
@@ -27,11 +29,13 @@ import java.util.Set;
 public class HomeView extends CustomComponent implements View {
     private VaadinManagedSecurity vaadinSecurity;
     private UserDao userDao;
+    private ApplicationDao applicationDao;
 
     @Autowired
-    public HomeView(VaadinManagedSecurity vaadinSecurity, UserDao userDao) {
+    public HomeView(VaadinManagedSecurity vaadinSecurity, UserDao userDao, ApplicationDao applicationDao) {
         this.vaadinSecurity = vaadinSecurity;
         this.userDao = userDao;
+        this.applicationDao = applicationDao;
 
         MLabel header = new MLabel("Welcome to Thesaurum!")
                 .withStyleName(ValoTheme.LABEL_H1);
@@ -44,10 +48,24 @@ public class HomeView extends CustomComponent implements View {
         Set<Application> applications = currentUser.getApplications();
 
         MTable<Application> applicationTable = new MTable<>(applications)
-                .withProperties("name", "beginDate", "endDate")
-                .withColumnHeaders("Name", "Begin", "End");
+                .withProperties("name", "beginDate", "endDate", "state")
+                .withColumnHeaders("Name", "Begin", "End", "State");
         applicationTable.setPageLength(applicationTable.size());
         applicationTable.setCaption("Your applications");
+
+        applicationTable.addRowClickListener(event -> {
+            if (event.isDoubleClick()) {
+                ApplicationForm form = new ApplicationForm();
+                form.setEntity(event.getRow());
+                form.setSavedHandler(application -> {
+                    applicationDao.update(application);
+                    applicationTable.removeAllItems();
+                    applicationTable.addItems(currentUser.getApplications());
+                    form.closePopup();
+                });
+                form.openInModalPopup();
+            }
+        });
 
         MVerticalLayout root = new MVerticalLayout()
                 .withSpacing(true)

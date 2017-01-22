@@ -6,6 +6,10 @@ import java.util.Date;
 @Entity
 @Table(name = "application")
 public class Application {
+    public enum State {
+        NEW, SUBMITTED, SCHEDULED, FUNDED, REJECTED
+    }
+
     @Id
     @GeneratedValue
     @Column(name = "id")
@@ -24,12 +28,16 @@ public class Application {
     private String justification;
     @Column(name = "action_plan")
     private String actionPlan;
-    @Column(name = "accepted")
-    private Boolean accepted;
+    @Column(name = "state")
+    private State state;
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private BudgetPool budgetPool;
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private User owner;
+
+    public Application() {
+        state = State.NEW;
+    }
 
     public Integer getId() {
         return id;
@@ -95,12 +103,12 @@ public class Application {
         this.actionPlan = actionPlan;
     }
 
-    public Boolean getAccepted() {
-        return accepted;
+    public State getState() {
+        return state;
     }
 
-    public void setAccepted(Boolean accepted) {
-        this.accepted = accepted;
+    public void setState(State state) {
+        this.state = state;
     }
 
     public BudgetPool getBudgetPool() {
