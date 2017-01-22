@@ -21,6 +21,8 @@ import pl.edu.uj.service.ThesaurumUserDetailsService;
 @EnableJpaRepositories
 @EnableTransactionManagement
 public class ThesaurumApplication {
+	@Autowired
+	private ThesaurumUserDetailsService userDetailsService;
 
 	public static void main(String[] args) {
 		SpringApplication.run(ThesaurumApplication.class, args);
@@ -35,9 +37,6 @@ public class ThesaurumApplication {
             return systemMessages;
         };
 	}
-
-    @Autowired
-    private ThesaurumUserDetailsService userDetailsService;
 
     @Bean
     public PasswordEncoder passwordEncoder(){

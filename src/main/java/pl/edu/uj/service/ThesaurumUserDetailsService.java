@@ -9,7 +9,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pl.edu.uj.bo.UserRole;
+import pl.edu.uj.bo.Role;
 import pl.edu.uj.dao.UserDao;
 
 import java.util.ArrayList;
@@ -40,11 +40,11 @@ public class ThesaurumUserDetailsService implements UserDetailsService {
                 user.getEnabled(), true, true, true, authorities);
     }
 
-    private List<GrantedAuthority> buildUserAuthority(Set<UserRole> userRoles) {
+    private List<GrantedAuthority> buildUserAuthority(Set<Role> roles) {
         Set<GrantedAuthority> setAuths = new HashSet<GrantedAuthority>();
         // Build user's authorities
-        for (UserRole userRole : userRoles) {
-            setAuths.add(new SimpleGrantedAuthority(userRole.getRole()));
+        for (Role role : roles) {
+            setAuths.add(new SimpleGrantedAuthority(role.getName()));
         }
         List<GrantedAuthority> Result = new ArrayList<GrantedAuthority>(setAuths);
         return Result;

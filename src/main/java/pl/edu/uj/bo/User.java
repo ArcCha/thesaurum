@@ -23,8 +23,12 @@ public class User {
     private Boolean enabled;
     @Column(name = "email")
     private String email;
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
-    private Set<UserRole> roles = new HashSet<>();
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "user_role",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles = new HashSet<>();
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
     private Set<Application> applications = new HashSet<>();
 
@@ -95,11 +99,11 @@ public class User {
         this.email = email;
     }
 
-    public Set<UserRole> getRoles() {
+    public Set<Role> getRoles() {
         return roles;
     }
 
-    public void setRoles(Set<UserRole> roles) {
+    public void setRoles(Set<Role> roles) {
         this.roles = roles;
     }
 
