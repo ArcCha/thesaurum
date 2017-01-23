@@ -27,7 +27,7 @@ public class CreateApplication implements Runnable {
     @Override
     public void run() {
         String currentUsername = vaadinSecurity.getAuthentication().getName();
-        User currentUser = userDao.findByUsername(currentUsername);
+        User currentUser = userDao.findByUsername(currentUsername).get();
         ApplicationForm applicationForm = new ApplicationForm();
         Application application = new Application();
         applicationForm.setEntity(application);

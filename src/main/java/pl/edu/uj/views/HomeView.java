@@ -44,7 +44,7 @@ public class HomeView extends CustomComponent implements View {
                 .withContentMode(ContentMode.HTML);
 
         String currentUsername = vaadinSecurity.getAuthentication().getName();
-        User currentUser = userDao.findByUsername(currentUsername);
+        User currentUser = userDao.findByUsername(currentUsername).get();
         Set<Application> applications = currentUser.getApplications();
 
         MTable<Application> applicationTable = new MTable<>(applications)

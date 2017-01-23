@@ -15,7 +15,7 @@ import org.vaadin.viritin.fields.MTable;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 import pl.edu.uj.Sections;
 import pl.edu.uj.bo.User;
-import pl.edu.uj.service.UserService;
+import pl.edu.uj.dao.UserDao;
 import pl.edu.uj.views.forms.UserForm;
 
 @Secured("ROLE_ADMIN")
@@ -24,16 +24,16 @@ import pl.edu.uj.views.forms.UserForm;
 @FontAwesomeIcon(FontAwesome.COGS)
 public class UserListView extends CustomComponent implements View {
 
-    private final UserService userService;
+    private final UserDao userDao;
 
     @Autowired
-    public UserListView(UserService userService) {
-        this.userService = userService;
+    public UserListView(UserDao userDao) {
+        this.userDao = userDao;
         init();
     }
 
     private void init() {
-        MTable<User> table = new MTable<>(userService.fetchAll())
+        MTable<User> table = new MTable<>(userDao.getAll())
                 .withProperties("name", "surname", "username", "email", "enabled")
                 .withColumnHeaders("Name", "Surname", "Username", "Email", "Enabled");
         table.setPageLength(table.size());
@@ -43,9 +43,9 @@ public class UserListView extends CustomComponent implements View {
                 UserForm form = new UserForm();
                 form.setEntity(event.getRow());
                 form.setSavedHandler(user -> {
-                    userService.update(user);
+                    userDao.update(user);
                     table.removeAllItems();
-                    table.addItems(userService.fetchAll());
+                    table.addItems(userDao.getAll());
                     form.closePopup();
                 });
                 form.openInModalPopup();

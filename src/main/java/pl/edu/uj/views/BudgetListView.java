@@ -19,7 +19,7 @@ import org.vaadin.viritin.layouts.MVerticalLayout;
 import pl.edu.uj.Sections;
 import pl.edu.uj.bo.Budget;
 import pl.edu.uj.bo.BudgetPool;
-import pl.edu.uj.service.BudgetService;
+import pl.edu.uj.dao.BudgetDao;
 import pl.edu.uj.views.forms.BudgetForm;
 import pl.edu.uj.views.forms.BudgetPoolForm;
 
@@ -31,17 +31,17 @@ import java.util.Set;
 @SideBarItem(sectionId = Sections.VIEWS, caption = "Budget List View")
 @FontAwesomeIcon(FontAwesome.COGS)
 public class BudgetListView extends CustomComponent implements View {
-    private BudgetService budgetService;
+    private BudgetDao budgetDao;
     private Budget selectedBudget;
 
     @Autowired
-    public BudgetListView(BudgetService budgetService) {
-        this.budgetService = budgetService;
+    public BudgetListView(BudgetDao budgetDao) {
+        this.budgetDao = budgetDao;
         init();
     }
 
     private void init() {
-        List<Budget> budgets = budgetService.fetchAllBudgets();
+        List<Budget> budgets = budgetDao.getAll();
 
         MTable<Budget> budgetTable = new MTable<>(budgets)
                 .withProperties("name", "startDate", "endDate")
@@ -58,9 +58,9 @@ public class BudgetListView extends CustomComponent implements View {
                 BudgetForm budgetForm = new BudgetForm();
                 budgetForm.setEntity(event.getRow());
                 budgetForm.setSavedHandler(budget -> {
-                    budgetService.update(budget);
+                    budgetDao.update(budget);
                     budgetTable.removeAllItems();
-                    budgetTable.addItems(budgetService.fetchAllBudgets());
+                    budgetTable.addItems(budgetDao.getAll());
                     budgetForm.closePopup();
                 });
                 budgetForm.openInModalPopup();
@@ -74,7 +74,7 @@ public class BudgetListView extends CustomComponent implements View {
                 BudgetPoolForm poolForm = new BudgetPoolForm();
                 poolForm.setEntity(event.getRow());
                 poolForm.setSavedHandler(pool -> {
-                    budgetService.update(pool.getBudget());
+                    budgetDao.update(pool.getBudget());
                     refreshBudgetPoolsTable(pool.getBudget(), poolTable);
                     poolForm.closePopup();
                 });
@@ -88,9 +88,9 @@ public class BudgetListView extends CustomComponent implements View {
                     BudgetForm budgetForm = new BudgetForm();
                     budgetForm.setEntity(new Budget());
                     budgetForm.setSavedHandler(budget -> {
-                        budgetService.add(budget);
+                        budgetDao.insert(budget);
                         budgetTable.removeAllItems();
-                        budgetTable.addItems(budgetService.fetchAllBudgets());
+                        budgetTable.addItems(budgetDao.getAll());
                     });
                     budgetForm.openInModalPopup();
                 });
@@ -108,7 +108,7 @@ public class BudgetListView extends CustomComponent implements View {
                     poolForm.setEntity(new BudgetPool());
                     poolForm.setSavedHandler(pool -> {
                             selectedBudget.addBudgetPool(pool);
-                            budgetService.update(selectedBudget);
+                            budgetDao.update(selectedBudget);
                             refreshBudgetPoolsTable(pool.getBudget(), poolTable);
                     });
                     poolForm.openInModalPopup();

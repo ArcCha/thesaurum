@@ -2,11 +2,11 @@ package pl.edu.uj.dao;
 
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 
-@Repository
+@Component
 public class InitialDatabaseData {
     @Inject
     RoleDao roleDao;

@@ -2,6 +2,7 @@ package pl.edu.uj.dao;
 
 import org.hibernate.Session;
 import org.hibernate.query.Query;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,50 +22,52 @@ public class UserDao extends AbstractDao {
     @Inject
     private PasswordEncoder passwordEncoder;
 
+    @Transactional
     public void insert(User user) {
         Session session = getCurrentSession();
         session.save(user);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @Transactional
     public void update(User user) {
         Session session = getCurrentSession();
         session.update(user);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @Transactional
     public List<User> getAll() {
         Session session = getCurrentSession();
         Query<User> query = session.createQuery("from User order by id", User.class);
         return query.list();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
-    public User findByUsername(String username) {
+    public Optional<User> findByUsername(String username) {
         Session session = getCurrentSession();
         Query<User> query = session.createQuery("from User where username = :username", User.class)
                 .setParameter("username", username);
-        List<User> users = query.list();
-        if (users.size() > 0) {
-            return users.get(0);
-        }
-        return null;
+        return query.uniqueResultOptional();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @Transactional
     public void enable(User user) {
-        Session session = getCurrentSession();
-        Query query = session.createQuery("update User set enabled = True where id = :id")
-                .setParameter("id", user.getId());
-        query.executeUpdate();
+        user.setEnabled(true);
+        update(user);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @Transactional
     public void disable(User user) {
-        Session session = getCurrentSession();
-        Query query = session.createQuery("update User set enabled = False where id = :id")
-                .setParameter("id", user.getId());
-        query.executeUpdate();
+        user.setEnabled(false);
+        update(user);
     }
 
     @Transactional
-    public void ensureAdminExists() {
+    void ensureAdminExists() {
         Session session = getCurrentSession();
         Query<User> query = session.createQuery("from User where username = 'admin'", User.class);
         Optional<User> admin = query.uniqueResultOptional();

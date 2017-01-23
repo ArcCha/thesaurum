@@ -18,14 +18,14 @@ import org.vaadin.viritin.fields.MTextField;
 import org.vaadin.viritin.layouts.MFormLayout;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 import pl.edu.uj.bo.User;
+import pl.edu.uj.dao.UserDao;
 import pl.edu.uj.event.SuccessfulRegistrationEvent;
-import pl.edu.uj.service.UserService;
 
 @PrototypeScope
 @SpringComponent
 public class RegistrationScreen extends CustomComponent {
 
-    private final UserService userService;
+    private final UserDao userDao;
     private final PasswordEncoder passwordEncoder;
     private final EventBus.SessionEventBus eventBus;
 
@@ -37,10 +37,10 @@ public class RegistrationScreen extends CustomComponent {
     private MButton register;
 
     @Autowired
-    public RegistrationScreen(UserService userService,
+    public RegistrationScreen(UserDao userDao,
                               EventBus.SessionEventBus eventBus,
                               PasswordEncoder passwordEncoder) {
-        this.userService = userService;
+        this.userDao = userDao;
         this.eventBus = eventBus;
         this.passwordEncoder = passwordEncoder;
         initLayout();
@@ -80,7 +80,7 @@ public class RegistrationScreen extends CustomComponent {
                 surnameField.getValue(),
                 emailField.getValue(),
                 passwordEncoder.encode(passwordField.getValue()));
-        userService.add(user);
+        userDao.insert(user);
         eventBus.publish(this, new SuccessfulRegistrationEvent(getUI()));
     }
 }

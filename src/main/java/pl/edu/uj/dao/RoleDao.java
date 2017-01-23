@@ -16,6 +16,7 @@ public class RoleDao extends AbstractDao {
     private static final Set<String> roleNames = Stream.of("ADMIN", "JUDGE", "SECRETARY", "APPLICANT")
             .collect(Collectors.toSet());
 
+    @Transactional
     public Optional<Role> getByName(String name) {
         Session session = getCurrentSession();
         Query<Role> query = session.createQuery("from Role where name = :name", Role.class)
@@ -24,7 +25,7 @@ public class RoleDao extends AbstractDao {
     }
 
     @Transactional
-    public void ensureRolesExist() {
+    void ensureRolesExist() {
         Session session = getCurrentSession();
         Query<Role> query = session.createQuery("from Role where name = :name", Role.class);
         for (String roleName : roleNames) {

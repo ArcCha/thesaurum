@@ -26,7 +26,7 @@ public class ThesaurumUserDetailsService implements UserDetailsService {
     @Transactional(readOnly = true)
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        pl.edu.uj.bo.User user = userDao.findByUsername(username);
+        pl.edu.uj.bo.User user = userDao.findByUsername(username).get();
         if (user == null) {
             throw new UsernameNotFoundException("Username not found");
         }
