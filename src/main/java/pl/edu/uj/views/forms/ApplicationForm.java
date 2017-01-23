@@ -8,6 +8,7 @@ import org.vaadin.viritin.fields.MDateField;
 import org.vaadin.viritin.fields.MTextArea;
 import org.vaadin.viritin.fields.MTextField;
 import org.vaadin.viritin.form.AbstractForm;
+import org.vaadin.viritin.layouts.MHorizontalLayout;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 import pl.edu.uj.bo.Application;
 
@@ -20,20 +21,27 @@ public class ApplicationForm extends AbstractForm<Application> {
     private MTextArea justification = new MTextArea("Justification");
     private MTextArea actionPlan = new MTextArea("Action plan");
 
-    private MButton submitBtn = new MButton("Submit");
+    private MButton submitBtn = new MButton("Submit")
+            .withListener(click -> {
+                getEntity().setState(Application.State.SUBMITTED);
+                closePopup();
+            });
 
     @Override
     protected Component createContent() {
-        submitBtn.addClickListener(click -> {
-            getEntity().setState(Application.State.SUBMITTED);
-        });
+        if (getEntity().getState() != Application.State.NEW) {
+            getSaveButton().setEnabled(false);
+            submitBtn.setCaption("Submitted");
+            submitBtn.setEnabled(false);
+        }
+
         HorizontalLayout toolbar = getToolbar();
         toolbar.addComponentAsFirst(submitBtn);
         return new MVerticalLayout(
                 name,
                 localization,
-                beginDate,
-                endDate,
+                new MHorizontalLayout()
+                    .with(beginDate, endDate),
                 description,
                 justification,
                 actionPlan,

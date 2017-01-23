@@ -18,7 +18,7 @@ import pl.edu.uj.bo.User;
 import pl.edu.uj.dao.UserDao;
 import pl.edu.uj.views.forms.UserForm;
 
-@Secured("ROLE_ADMIN")
+@Secured("ADMIN")
 @SpringView(name = "userList")
 @SideBarItem(sectionId = Sections.VIEWS, caption = "User List View")
 @FontAwesomeIcon(FontAwesome.COGS)

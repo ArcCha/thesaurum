@@ -26,7 +26,7 @@ import pl.edu.uj.views.forms.BudgetPoolForm;
 import java.util.List;
 import java.util.Set;
 
-@Secured("ROLE_ADMIN")
+@Secured("ADMIN")
 @SpringView(name = "budgetList")
 @SideBarItem(sectionId = Sections.VIEWS, caption = "Budget List View")
 @FontAwesomeIcon(FontAwesome.COGS)

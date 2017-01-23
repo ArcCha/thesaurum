@@ -72,8 +72,9 @@ public class LoginScreen extends CustomComponent {
     }
 
     private MFormLayout initFormLayout() {
-        usernameField = new MTextField("Username");
+        usernameField = new MTextField("Username").withValue("admin");
         passwordField = new MPasswordField("Password");
+        passwordField.setValue("admin");
         loginBtn = new MButton("Login")
                 .withStyleName(ValoTheme.BUTTON_PRIMARY)
                 .withClickShortcut(ShortcutAction.KeyCode.ENTER)
