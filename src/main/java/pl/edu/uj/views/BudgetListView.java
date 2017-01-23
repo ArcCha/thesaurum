@@ -8,7 +8,6 @@ import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.themes.ValoTheme;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.annotation.Secured;
 import org.vaadin.spring.sidebar.annotation.FontAwesomeIcon;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import org.vaadin.viritin.MSize;
@@ -26,7 +25,7 @@ import pl.edu.uj.views.forms.BudgetPoolForm;
 import java.util.List;
 import java.util.Set;
 
-@Secured("ADMIN")
+//@Secured("ADMIN")
 @SpringView(name = "budgetList")
 @SideBarItem(sectionId = Sections.VIEWS, caption = "Budget List View")
 @FontAwesomeIcon(FontAwesome.COGS)
@@ -42,7 +41,6 @@ public class BudgetListView extends CustomComponent implements View {
 
     private void init() {
         List<Budget> budgets = budgetDao.getAll();
-
         MTable<Budget> budgetTable = new MTable<>(budgets)
                 .withProperties("name", "startDate", "endDate")
                 .withColumnHeaders("Name", "Start", "End");

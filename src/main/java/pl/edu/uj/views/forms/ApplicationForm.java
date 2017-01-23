@@ -29,14 +29,14 @@ public class ApplicationForm extends AbstractForm<Application> {
 
     @Override
     protected Component createContent() {
-        if (getEntity().getState() != Application.State.NEW) {
-            getSaveButton().setEnabled(false);
-            submitBtn.setCaption("Submitted");
-            submitBtn.setEnabled(false);
-        }
+//        if (getEntity().getState() != Application.State.NEW) {
+//            getSaveButton().setEnabled(false);
+//            submitBtn.setCaption("Submitted");
+//            submitBtn.setEnabled(false);
+//        }
 
         HorizontalLayout toolbar = getToolbar();
-        toolbar.addComponentAsFirst(submitBtn);
+//        toolbar.addComponentAsFirst(submitBtn);
         return new MVerticalLayout(
                 name,
                 localization,

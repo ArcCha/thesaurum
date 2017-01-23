@@ -2,7 +2,6 @@ package pl.edu.uj.dao;
 
 import org.hibernate.Session;
 import org.hibernate.query.Query;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,14 +27,14 @@ public class UserDao extends AbstractDao {
         session.save(user);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     public void update(User user) {
         Session session = getCurrentSession();
         session.update(user);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     public List<User> getAll() {
         Session session = getCurrentSession();
@@ -43,7 +42,6 @@ public class UserDao extends AbstractDao {
         return query.list();
     }
 
-//    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     public Optional<User> findByUsername(String username) {
         Session session = getCurrentSession();
@@ -52,14 +50,14 @@ public class UserDao extends AbstractDao {
         return query.uniqueResultOptional();
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     public void enable(User user) {
         user.setEnabled(true);
         update(user);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     public void disable(User user) {
         user.setEnabled(false);

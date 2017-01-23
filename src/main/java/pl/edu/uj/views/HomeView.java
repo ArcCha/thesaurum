@@ -19,7 +19,6 @@ import pl.edu.uj.bo.Application;
 import pl.edu.uj.bo.User;
 import pl.edu.uj.dao.ApplicationDao;
 import pl.edu.uj.dao.UserDao;
-import pl.edu.uj.views.forms.ApplicationForm;
 
 import java.util.Set;
 
@@ -55,15 +54,7 @@ public class HomeView extends CustomComponent implements View {
 
         applicationTable.addRowClickListener(event -> {
             if (event.isDoubleClick()) {
-                ApplicationForm form = new ApplicationForm();
-                form.setEntity(event.getRow());
-                form.setSavedHandler(application -> {
-                    applicationDao.update(application);
-                    applicationTable.removeAllItems();
-                    applicationTable.addItems(currentUser.getApplications());
-                    form.closePopup();
-                });
-                form.openInModalPopup();
+                getUI().getNavigator().navigateTo("application/" + event.getRow().getId());
             }
         });
 

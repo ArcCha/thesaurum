@@ -14,7 +14,7 @@ import pl.edu.uj.dao.UserDao;
 import pl.edu.uj.views.forms.ApplicationForm;
 
 @SpringComponent
-@SideBarItem(sectionId = Sections.OPERATIONS, caption = "Create application")
+@SideBarItem(sectionId = Sections.OPERATIONS, caption = "Create application", order = 0)
 @FontAwesomeIcon(FontAwesome.PLUS)
 public class CreateApplication implements Runnable {
     @Autowired

@@ -1,6 +1,6 @@
 - close modal after save
-- delete services pacakge, unnecessary abstraction as for now
 - change all 'startDate' to 'beginDate'
 - enable submit button only when application is saved or make it save
 - app is not showing on home screen when it is added (need to reload table)
 - fix role names
+- add possibility to download files

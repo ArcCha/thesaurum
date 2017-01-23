@@ -12,13 +12,12 @@ import org.springframework.transaction.annotation.Transactional;
 import pl.edu.uj.bo.Role;
 import pl.edu.uj.dao.UserDao;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.logging.Logger;
 
 @Service
 public class ThesaurumUserDetailsService implements UserDetailsService {
+    private static final Logger log = Logger.getLogger(ThesaurumUserDetailsService.class.getSimpleName());
 
     @Autowired
     private UserDao userDao;
@@ -26,27 +25,31 @@ public class ThesaurumUserDetailsService implements UserDetailsService {
     @Transactional(readOnly = true)
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        pl.edu.uj.bo.User user = userDao.findByUsername(username).get();
-        if (user == null) {
+        Optional<pl.edu.uj.bo.User> user = userDao.findByUsername(username);
+        if (!user.isPresent()) {
             throw new UsernameNotFoundException("Username not found");
         }
-        List<GrantedAuthority> authorities = buildUserAuthority(user.getRoles());
-        return buildUserForAuthentication(user, authorities);
+        List<GrantedAuthority> authorities = buildUserAuthority(user.get().getRoles());
+        return buildUserForAuthentication(user.get(), authorities);
     }
 
     private User buildUserForAuthentication(pl.edu.uj.bo.User user,
                                             List<GrantedAuthority> authorities) {
-        return new User(user.getUsername(), user.getPassword(),
-                user.getEnabled(), true, true, true, authorities);
+        return new User(
+            user.getUsername(),
+            user.getPassword(),
+            user.getEnabled(),
+            true,
+            true,
+            true,
+            authorities);
     }
 
     private List<GrantedAuthority> buildUserAuthority(Set<Role> roles) {
-        Set<GrantedAuthority> setAuths = new HashSet<GrantedAuthority>();
-        // Build user's authorities
+        Set<GrantedAuthority> setAuths = new HashSet<>();
         for (Role role : roles) {
             setAuths.add(new SimpleGrantedAuthority(role.getName()));
         }
-        List<GrantedAuthority> Result = new ArrayList<GrantedAuthority>(setAuths);
-        return Result;
+        return new ArrayList<>(setAuths);
     }
 }

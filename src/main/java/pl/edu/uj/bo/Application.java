@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "application")
+@Table(name = "applications")
 public class Application {
     public enum State {
         NEW, SUBMITTED, SCHEDULED, FUNDED, REJECTED

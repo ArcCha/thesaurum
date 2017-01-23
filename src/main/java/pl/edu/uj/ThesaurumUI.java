@@ -17,11 +17,15 @@ import org.vaadin.spring.security.util.SecurityExceptionUtils;
 import org.vaadin.spring.security.util.SuccessfulLoginEvent;
 import pl.edu.uj.event.SuccessfulRegistrationEvent;
 
+import java.util.logging.Logger;
+
 
 @Theme(ValoTheme.THEME_NAME)
 @SpringUI
 @Push
 public class ThesaurumUI extends UI {
+    private static final Logger log = Logger.getLogger(ThesaurumUI.class.getSimpleName());
+
     @Autowired
     ApplicationContext applicationContext;
 
@@ -33,8 +37,7 @@ public class ThesaurumUI extends UI {
 
     @Override
     protected void init(VaadinRequest request) {
-        getPage().setTitle("Vaadin Managed Security Demo");
-        // Let's register a custom error handler to make the 'access denied' messages a bit friendlier.
+        getPage().setTitle("Thesaurum");
         setErrorHandler(new DefaultErrorHandler() {
             @Override
             public void error(com.vaadin.server.ErrorEvent event) {
