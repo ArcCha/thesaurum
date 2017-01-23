@@ -23,7 +23,7 @@ import pl.edu.uj.views.forms.ApplicationForm;
 
 import java.util.Set;
 
-@SpringView(name = "home")
+@SpringView(name = "")
 @SideBarItem(sectionId = Sections.VIEWS, caption = "Home", order = 0)
 @FontAwesomeIcon(FontAwesome.HOME)
 public class HomeView extends CustomComponent implements View {

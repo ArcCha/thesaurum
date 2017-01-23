@@ -43,7 +43,7 @@ public class UserDao extends AbstractDao {
         return query.list();
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     public Optional<User> findByUsername(String username) {
         Session session = getCurrentSession();
