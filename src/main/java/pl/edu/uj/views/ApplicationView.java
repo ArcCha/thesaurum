@@ -101,7 +101,6 @@ public class ApplicationView extends CustomComponent implements View {
         for (MHorizontalLayout entry : getFileList(app)) {
             filesLayout.add(entry);
         }
-        log.severe(String.valueOf(filesLayout.getComponentCount()));
 
         UploadField uploadField = new UploadField();
         uploadField.setFieldType(UploadField.FieldType.FILE);

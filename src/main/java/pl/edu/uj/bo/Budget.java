@@ -14,8 +14,8 @@ public class Budget {
     private Integer id;
     @Column(name = "name")
     private String name;
-    @Column(name = "start_date")
-    private Date startDate;
+    @Column(name = "begin_date")
+    private Date beginDate;
     @Column(name = "end_date")
     private Date endDate;
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "budget", cascade = { CascadeType.ALL })
@@ -24,9 +24,9 @@ public class Budget {
     public Budget() {
     }
 
-    public Budget(String name, Date startDate, Date endDate) {
+    public Budget(String name, Date beginDate, Date endDate) {
         this.name = name;
-        this.startDate = startDate;
+        this.beginDate = beginDate;
         this.endDate = endDate;
     }
 
@@ -46,12 +46,12 @@ public class Budget {
         this.name = name;
     }
 
-    public Date getStartDate() {
-        return startDate;
+    public Date getBeginDate() {
+        return beginDate;
     }
 
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
+    public void setBeginDate(Date beginDate) {
+        this.beginDate = beginDate;
     }
 
     public Date getEndDate() {

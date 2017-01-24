@@ -42,6 +42,7 @@ public class ThesaurumUI extends UI {
             @Override
             public void error(com.vaadin.server.ErrorEvent event) {
                 if (SecurityExceptionUtils.isAccessDeniedException(event.getThrowable())) {
+                    event.getThrowable().printStackTrace();
                     Notification.show("Sorry, you don't have access to do that.");
                 } else {
                     super.error(event);

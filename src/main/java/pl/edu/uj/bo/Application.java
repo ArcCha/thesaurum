@@ -34,6 +34,8 @@ public class Application {
     private BudgetPool budgetPool;
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private User owner;
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private GradingRound gradingRound;
 
     public Application() {
         state = State.NEW;
@@ -125,5 +127,18 @@ public class Application {
 
     public void setOwner(User owner) {
         this.owner = owner;
+    }
+
+    public GradingRound getGradingRound() {
+        return gradingRound;
+    }
+
+    public void setGradingRound(GradingRound gradingRound) {
+        this.gradingRound = gradingRound;
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 }

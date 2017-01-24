@@ -7,6 +7,7 @@ import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.CustomComponent;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.vaadin.spring.sidebar.annotation.FontAwesomeIcon;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 import org.vaadin.viritin.MSize;
@@ -17,7 +18,7 @@ import pl.edu.uj.bo.User;
 import pl.edu.uj.dao.UserDao;
 import pl.edu.uj.views.forms.UserForm;
 
-//@Secured("ADMIN")
+@Secured("ROLE_ADMIN")
 @SpringView(name = "userList")
 @SideBarItem(sectionId = Sections.VIEWS, caption = "User List View")
 @FontAwesomeIcon(FontAwesome.COGS)
